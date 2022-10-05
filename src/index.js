@@ -146,10 +146,7 @@ class MagicalScroll {
     }
     this.elements = [];
 
-    this.eventContainer.addEventListener("scroll", () => {
-      this.container.scrollTop = this.container.scrollTop;
-      requestAnimationFrame(() => this.refresh());
-    });
+    window.requestAnimationFrame(() => this.refresh());
   }
 
   addElement(element = {}) {
@@ -272,6 +269,7 @@ class MagicalScroll {
         cssFunction(element.target, property, value);
       });
     });
+    window.requestAnimationFrame(() => this.refresh());
   }
 }
 
