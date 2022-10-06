@@ -108,12 +108,6 @@ Explanation
 | property | name of the property, `animationName` as the example above |
 | value | computed value |
 
-## Refresh immediately
-
-```javascript=
-MagicalScroll.getInstance().refresh();
-```
-
 ## What the next?
 
 1. Provide other properties something like `skew`, `brightness`.
