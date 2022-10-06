@@ -144,6 +144,7 @@ class MagicalScroll {
         this.container = this.eventContainer = element;
       }
     }
+    this.scrollTop = 0;
     this.elements = [];
 
     window.requestAnimationFrame(() => this.refresh());
@@ -188,10 +189,9 @@ class MagicalScroll {
           const scrollHeight = this.container.scrollHeight;
           const screenWidth = window.innerWidth;
           const screenHeight = window.innerHeight;
-          const elementTop = bounds.top + this.container.scrollTop;
+          const elementTop = bounds.top + this.scrollTop;
           const elementBottom = elementTop + bounds.height;
-          const ancestorElementTop =
-            ancestorElementBounds.top + this.container.scrollTop;
+          const ancestorElementTop = ancestorElementBounds.top + this.scrollTop;
           const ancestorElementBottom =
             ancestorElementTop + ancestorElementBounds.height;
 
@@ -239,36 +239,40 @@ class MagicalScroll {
   }
 
   refresh() {
-    this.elements.forEach((element) => {
-      Object.entries(element.animations).forEach(([property, animation]) => {
-        // populate value;
-        let populateValueFunction = MagicalScroll.defaultPopulateValueCallback;
-        if (animation.populateValueCallback) {
-          populateValueFunction = animation.populateValueCallback;
-        } else if (
-          MagicalScroll.propertyPopulateCallbacks.hasOwnProperty(property)
-        ) {
-          populateValueFunction =
-            MagicalScroll.propertyPopulateCallbacks[property];
-        }
-        const value = populateValueFunction(
-          this.container.scrollTop,
-          animation.positions,
-          animation.values
-        );
+    if (this.scrollTop !== this.container.scrollTop) {
+      this.scrollTop = this.container.scrollTop;
+      this.elements.forEach((element) => {
+        Object.entries(element.animations).forEach(([property, animation]) => {
+          // populate value;
+          let populateValueFunction =
+            MagicalScroll.defaultPopulateValueCallback;
+          if (animation.populateValueCallback) {
+            populateValueFunction = animation.populateValueCallback;
+          } else if (
+            MagicalScroll.propertyPopulateCallbacks.hasOwnProperty(property)
+          ) {
+            populateValueFunction =
+              MagicalScroll.propertyPopulateCallbacks[property];
+          }
+          const value = populateValueFunction(
+            this.scrollTop,
+            animation.positions,
+            animation.values
+          );
 
-        // effect css
-        let cssFunction = MagicalScroll.defaultPropertyCssCallback;
-        if (animation.cssCallback) {
-          cssFunction = animation.cssCallback;
-        } else if (
-          MagicalScroll.propertyCssCallbacks.hasOwnProperty(property)
-        ) {
-          cssFunction = MagicalScroll.propertyCssCallbacks[property];
-        }
-        cssFunction(element.target, property, value);
+          // effect css
+          let cssFunction = MagicalScroll.defaultPropertyCssCallback;
+          if (animation.cssCallback) {
+            cssFunction = animation.cssCallback;
+          } else if (
+            MagicalScroll.propertyCssCallbacks.hasOwnProperty(property)
+          ) {
+            cssFunction = MagicalScroll.propertyCssCallbacks[property];
+          }
+          cssFunction(element.target, property, value);
+        });
       });
-    });
+    }
     window.requestAnimationFrame(() => this.refresh());
   }
 }
