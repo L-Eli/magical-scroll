@@ -147,7 +147,7 @@ class MagicalScroll {
     this.scrollTop = 0;
     this.elements = [];
 
-    window.requestAnimationFrame(() => this.refresh());
+    window.requestAnimationFrame(() => this.refresh(true));
   }
 
   addElement(element = {}) {
@@ -238,8 +238,8 @@ class MagicalScroll {
     MagicalScroll.propertyCssCallbacks[property] = propertyCssCallback;
   }
 
-  refresh() {
-    if (this.scrollTop !== this.container.scrollTop) {
+  refresh(initialize = true) {
+    if (initialize || this.scrollTop !== this.container.scrollTop) {
       this.scrollTop = this.container.scrollTop;
       this.elements.forEach((element) => {
         Object.entries(element.animations).forEach(([property, animation]) => {
