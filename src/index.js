@@ -115,6 +115,18 @@ class MagicalScroll {
         target.style.transform += translateY;
       }
     },
+    left: (target, _, value) => {
+      target.style.left = `${value}px`;
+    },
+    right: (target, _, value) => {
+      target.style.right = `${value}px`;
+    },
+    top: (target, _, value) => {
+      target.style.top = `${value}px`;
+    },
+    bottom: (target, _, value) => {
+      target.style.bottom = `${value}px`;
+    },
   };
 
   static defaultPropertyCssCallback = (target, property, value) => {
