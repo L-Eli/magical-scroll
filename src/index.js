@@ -228,7 +228,7 @@ class MagicalScroll {
     }
 
     const bounds = element.target.getBoundingClientRect();
-    Object.entries(element.animations).forEach(([_, animation]) => {
+    Object.entries(element.animations).forEach(([property, animation]) => {
       animation.originalPositions = [...animation.positions];
       animation.positions.forEach((position, index) => {
         if (typeof position === "string") {
@@ -239,11 +239,17 @@ class MagicalScroll {
           );
         }
       });
-      animation.values.forEach((value, index) => {
-        if (typeof value === "string") {
-          animation.values[index] = this.parseSlug(element, value, bounds);
-        }
-      });
+
+      if (
+        MagicalScroll.propertyPopulateCallbacks[property] ===
+        MagicalScroll.populateNumberValueCallback
+      ) {
+        animation.values.forEach((value, index) => {
+          if (typeof value === "string") {
+            animation.values[index] = this.parseSlug(element, value, bounds);
+          }
+        });
+      }
     });
 
     this.elements.push(element);
