@@ -1,6 +1,6 @@
 {
   "name": "magical-scroll",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "",
   "main": "dist/index.min.js",
   "scripts": {
