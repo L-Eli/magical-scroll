@@ -238,6 +238,11 @@ class MagicalScroll {
           );
         }
       });
+      animation.values.forEach((value, index) => {
+        if (typeof value === "string") {
+          animation.values[index] = this.parseSlug(element, value, bounds);
+        }
+      });
     });
 
     this.elements.push(element);
