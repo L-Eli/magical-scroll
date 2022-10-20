@@ -133,6 +133,16 @@ class MagicalScroll {
     target.style[property] = value;
   };
 
+  // support value slug
+  static supportValueSlugProperties = {
+    left: true,
+    right: true,
+    top: true,
+    bottom: true,
+    translateX: true,
+    translateY: true,
+  };
+
   static getInstance(options) {
     if (!this.instance) {
       this.instance = new MagicalScroll(options);
@@ -240,10 +250,7 @@ class MagicalScroll {
         }
       });
 
-      if (
-        MagicalScroll.propertyPopulateCallbacks[property] ===
-        MagicalScroll.populateNumberValueCallback
-      ) {
+      if (MagicalScroll.supportValueSlugProperties[property]) {
         animation.values.forEach((value, index) => {
           if (typeof value === "string") {
             animation.values[index] = this.parseSlug(element, value, bounds);
