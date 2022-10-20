@@ -171,8 +171,9 @@ class MagicalScroll {
         /#ancestorElement(In|Center|Out|Width|Height){(\d+)}/i
       ))
     ) {
+      ancestorElement = element.target.parentElement;
       const generations = parseInt(matches[2]);
-      for (let i = 0; i < generations; i++) {
+      for (let i = 1; i < generations; i++) {
         ancestorElement = ancestorElement.parentElement;
       }
       slug = slug.replace(matches[0], `#ancestorElement${matches[1]}`);
