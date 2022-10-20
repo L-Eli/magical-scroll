@@ -162,78 +162,79 @@ class MagicalScroll {
     window.requestAnimationFrame(() => this.refresh(true));
   }
 
+  parseSlug(element, slug, bounds) {
+    let ancestorElement = element.target.parentElement;
+    let matches = null;
+    // TODO: child
+    while (
+      (matches = slug.match(
+        /#ancestorElement(In|Center|Out|Width|Height){(\d+)}/i
+      ))
+    ) {
+      const generations = parseInt(matches[2]);
+      for (let i = 0; i < generations; i++) {
+        ancestorElement = ancestorElement.parentElement;
+      }
+      slug = slug.replace(matches[0], `#ancestorElement${matches[1]}`);
+    }
+
+    // TODO: https://developer.mozilla.org/zh-CN/docs/Web/API/Intersection_Observer_API
+    const ancestorElementBounds = ancestorElement.getBoundingClientRect();
+
+    const scrollWidth = this.container.scrollHeight;
+    const scrollHeight = this.container.scrollHeight;
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const elementTop = bounds.top + this.scrollTop;
+    const elementBottom = elementTop + bounds.height;
+    const ancestorElementTop = ancestorElementBounds.top + this.scrollTop;
+    const ancestorElementBottom =
+      ancestorElementTop + ancestorElementBounds.height;
+
+    return eval(
+      slug
+        // size
+        .replace(/#scrollHeight/g, scrollHeight)
+        .replace(/#scrollWidth/g, scrollWidth)
+        .replace(/#screenHeight/g, screenHeight)
+        .replace(/#screenWidth/g, screenWidth)
+        .replace(/#parentElement/g, "#ancestorElement")
+        .replace(/#ancestorElementWidth/g, ancestorElementBounds.width)
+        .replace(/#ancestorElementHeight/g, ancestorElementBounds.height)
+        .replace(/#elementWidth/g, bounds.width)
+        .replace(/#elementHeight/g, bounds.height)
+        // relative position
+        .replace(/#ancestorElementIn/g, ancestorElementTop - screenHeight)
+        .replace(
+          /#ancestorElementCenter/g,
+          ancestorElementTop -
+            screenHeight / 2 +
+            ancestorElementBounds.height / 2
+        )
+        .replace(/#ancestorElementOut/g, ancestorElementBottom)
+        .replace(/#elementIn/g, elementTop - screenHeight)
+        .replace(
+          /#elementCenter/g,
+          elementTop - screenHeight / 2 + bounds.height / 2
+        )
+        .replace(/#elementOut/g, elementBottom)
+    );
+  }
+
   addElement(element = {}) {
     if (typeof element.target === "string") {
       element.target = document.querySelector(element.target);
     }
 
     const bounds = element.target.getBoundingClientRect();
-    const generationsElement = [element.target, element.target.parentElement];
     Object.entries(element.animations).forEach(([_, animation]) => {
       animation.originalPositions = [...animation.positions];
       animation.positions.forEach((position, index) => {
         if (typeof position === "string") {
-          let ancestorElement = generationsElement[1];
-          let matches = null;
-          // TODO: child
-          while (
-            (matches = position.match(
-              /#ancestorElement(In|Center|Out|Width|Height){(\d+)}/i
-            ))
-          ) {
-            const generations = parseInt(matches[2]);
-            if (!generationsElement[generations]) {
-              for (let i = generationsElement.length; i <= generations; i++) {
-                generationsElement[i] = generationsElement[i - 1].parentElement;
-              }
-            }
-            ancestorElement = generationsElement[generations];
-            position = position.replace(
-              matches[0],
-              `#ancestorElement${matches[1]}`
-            );
-          }
-
-          // TODO: https://developer.mozilla.org/zh-CN/docs/Web/API/Intersection_Observer_API
-          const ancestorElementBounds = ancestorElement.getBoundingClientRect();
-
-          const scrollWidth = this.container.scrollHeight;
-          const scrollHeight = this.container.scrollHeight;
-          const screenWidth = window.innerWidth;
-          const screenHeight = window.innerHeight;
-          const elementTop = bounds.top + this.scrollTop;
-          const elementBottom = elementTop + bounds.height;
-          const ancestorElementTop = ancestorElementBounds.top + this.scrollTop;
-          const ancestorElementBottom =
-            ancestorElementTop + ancestorElementBounds.height;
-
-          animation.positions[index] = eval(
-            position
-              // size
-              .replace(/#scrollHeight/g, scrollHeight)
-              .replace(/#scrollWidth/g, scrollWidth)
-              .replace(/#screenHeight/g, screenHeight)
-              .replace(/#screenWidth/g, screenWidth)
-              .replace(/#parentElement/g, "#ancestorElement")
-              .replace(/#ancestorElementWidth/g, ancestorElementBounds.width)
-              .replace(/#ancestorElementHeight/g, ancestorElementBounds.height)
-              .replace(/#elementWidth/g, bounds.width)
-              .replace(/#elementHeight/g, bounds.height)
-              // relative position
-              .replace(/#ancestorElementIn/g, ancestorElementTop - screenHeight)
-              .replace(
-                /#ancestorElementCenter/g,
-                ancestorElementTop -
-                  screenHeight / 2 +
-                  ancestorElementBounds.height / 2
-              )
-              .replace(/#ancestorElementOut/g, ancestorElementBottom)
-              .replace(/#elementIn/g, elementTop - screenHeight)
-              .replace(
-                /#elementCenter/g,
-                elementTop - screenHeight / 2 + bounds.height / 2
-              )
-              .replace(/#elementOut/g, elementBottom)
+          animation.positions[index] = this.parseSlug(
+            element,
+            position,
+            bounds
           );
         }
       });
