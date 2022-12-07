@@ -3,6 +3,7 @@ type Color = HEX;
 
 interface ConstructorOptions {
   target: String | HTMLElement;
+  animations: unknown;
 }
 
 interface targetCallbackNumberType {
