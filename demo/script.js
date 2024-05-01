@@ -85,9 +85,9 @@ magicalScroll.addElement({
       positions: ["#screenHeight*2+300", "#screenHeight*2+750"],
       values: ['#ffffff1a', '#ffffffff'],
     },
-    VideoColorSpace: {
+    color: {
       positions: ["#screenHeight*2+300", "#screenHeight*2+750"],
-      values: ['#ffffffff', '#ffffff1a'],
+      values: ['#ffffffff', '#27353AFF'],
     },
   },
 });
