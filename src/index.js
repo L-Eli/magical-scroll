@@ -232,15 +232,13 @@ class MagicalScroll {
     );
   }
 
-  addElement(element = {}) {
-    if (typeof element.target === "string") {
-      element.target = document.querySelector(element.target);
-    }
-
+  preProcess(element) {
     const bounds = element.target.getBoundingClientRect();
     Object.entries(element.animations).forEach(([property, animation]) => {
-      animation.originalPositions = [...animation.positions];
-      animation.positions.forEach((position, index) => {
+      animation.originalPositions = animation.originalPositions || [
+        ...animation.positions,
+      ];
+      animation.originalPositions.forEach((position, index) => {
         if (typeof position === "string") {
           animation.positions[index] = this.parseSlug(
             element,
@@ -258,7 +256,13 @@ class MagicalScroll {
         });
       }
     });
+  }
+  addElement(element = {}) {
+    if (typeof element.target === "string") {
+      element.target = document.querySelector(element.target);
+    }
 
+    this.preProcess(element);
     this.elements.push(element);
   }
 
