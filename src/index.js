@@ -169,7 +169,21 @@ class MagicalScroll {
     this.scrollTop = 0;
     this.elements = [];
 
-    window.requestAnimationFrame(() => this.refresh(true));
+    // resize event
+    let timeout = null;
+    const resizeObserver = new ResizeObserver(() => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+      timeout = setTimeout(() => {
+        this.elements.forEach(this.preProcess.bind(this));
+        this.refresh();
+      }, 16);
+    });
+    resizeObserver.observe(this.container);
+
+    // scroll event
+    this.eventContainer.onscroll = this.refresh.bind(this);
   }
 
   parseSlug(element, slug, bounds) {
@@ -309,7 +323,6 @@ class MagicalScroll {
         });
       });
     }
-    window.requestAnimationFrame(() => this.refresh());
   }
 }
 
