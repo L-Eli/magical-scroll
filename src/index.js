@@ -206,7 +206,7 @@ class MagicalScroll {
     // TODO: https://developer.mozilla.org/zh-CN/docs/Web/API/Intersection_Observer_API
     const ancestorElementBounds = ancestorElement.getBoundingClientRect();
 
-    const scrollWidth = this.container.scrollHeight;
+    const scrollWidth = this.container.scrollWidth;
     const scrollHeight = this.container.scrollHeight;
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
