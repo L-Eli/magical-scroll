@@ -169,7 +169,21 @@ class MagicalScroll {
     this.scrollTop = 0;
     this.elements = [];
 
-    window.requestAnimationFrame(() => this.refresh(true));
+    // resize event
+    let timeout = null;
+    const resizeObserver = new ResizeObserver(() => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+      timeout = setTimeout(() => {
+        this.elements.forEach(this.preProcess.bind(this));
+        this.refresh();
+      }, 16);
+    });
+    resizeObserver.observe(this.container);
+
+    // scroll event
+    this.eventContainer.onscroll = this.refresh.bind(this);
   }
 
   parseSlug(element, slug, bounds) {
@@ -192,7 +206,7 @@ class MagicalScroll {
     // TODO: https://developer.mozilla.org/zh-CN/docs/Web/API/Intersection_Observer_API
     const ancestorElementBounds = ancestorElement.getBoundingClientRect();
 
-    const scrollWidth = this.container.scrollHeight;
+    const scrollWidth = this.container.scrollWidth;
     const scrollHeight = this.container.scrollHeight;
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
@@ -232,15 +246,13 @@ class MagicalScroll {
     );
   }
 
-  addElement(element = {}) {
-    if (typeof element.target === "string") {
-      element.target = document.querySelector(element.target);
-    }
-
+  preProcess(element) {
     const bounds = element.target.getBoundingClientRect();
     Object.entries(element.animations).forEach(([property, animation]) => {
-      animation.originalPositions = [...animation.positions];
-      animation.positions.forEach((position, index) => {
+      animation.originalPositions = animation.originalPositions || [
+        ...animation.positions,
+      ];
+      animation.originalPositions.forEach((position, index) => {
         if (typeof position === "string") {
           animation.positions[index] = this.parseSlug(
             element,
@@ -258,7 +270,13 @@ class MagicalScroll {
         });
       }
     });
+  }
+  addElement(element = {}) {
+    if (typeof element.target === "string") {
+      element.target = document.querySelector(element.target);
+    }
 
+    this.preProcess(element);
     this.elements.push(element);
   }
 
@@ -305,7 +323,6 @@ class MagicalScroll {
         });
       });
     }
-    window.requestAnimationFrame(() => this.refresh());
   }
 }
 
